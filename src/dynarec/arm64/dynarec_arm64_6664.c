@@ -159,7 +159,7 @@ uintptr_t dynarec64_6664(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int n
                 u16 = F16;
                 MOV32w(x3, u16);
                 STRH_REG(x3, ed, x4);
-                SMWRITELOCK(lock);
+                SMWRITE();
             }
             break;
 
