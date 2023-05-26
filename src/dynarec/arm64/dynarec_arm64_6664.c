@@ -32,6 +32,7 @@ uintptr_t dynarec64_6664(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int n
     uint8_t nextop;
     uint8_t gd, ed;
     int64_t j64;
+    uint16_t u16;
     int v0, v1;
     int64_t fixedaddress;
     int unscaled;
@@ -146,6 +147,21 @@ uintptr_t dynarec64_6664(dynarec_arm_t* dyn, uintptr_t addr, uintptr_t ip, int n
             }
             break;
 
+        case 0xC7:
+            INST_NAME("MOV FS:Ew, Iw");
+            nextop=F8;
+            if(MODREG) {   // reg <= i16
+                // Shouldn't be valid, would be "MOV FS:REG, Imm"
+                DEFAULT;
+            } else {                    // mem <= i16
+                grab_segdata(dyn, addr, ninst, x4, seg);
+                addr = geted(dyn, addr, ninst, nextop, &ed, x2, &fixedaddress,  NULL, 0, 0, rex, NULL, 0, 0);
+                u16 = F16;
+                MOV32w(x3, u16);
+                STRH_REG(x3, ed, x4);
+                SMWRITELOCK(lock);
+            }
+            break;
 
         default:
             DEFAULT;
